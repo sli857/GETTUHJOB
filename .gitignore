@@ -1,0 +1,10 @@
+# Secrets
+.env
+
+# Large or temporary files
+search_results/raw/
+logs/
+__pycache__/
+.mypy_cache/
+.DS_Store
+.claude/settings.local.json

@@ -1,0 +1,26 @@
+/* Shared resume style. Tailored resumes link this file; don't copy it into them. */
+@font-face { font-family: Lato; src: url(fonts/Lato-Regular.ttf); font-weight: 400; font-style: normal; }
+@font-face { font-family: Lato; src: url(fonts/Lato-Bold.ttf); font-weight: 700; font-style: normal; }
+@font-face { font-family: Lato; src: url(fonts/Lato-Italic.ttf); font-weight: 400; font-style: italic; }
+@font-face { font-family: Lato; src: url(fonts/Lato-BoldItalic.ttf); font-weight: 700; font-style: italic; }
+
+/* Fill knobs: change these on <body style="..."> in a tailored file, never here. */
+:root { --fs: 9.75pt; --lh: 1.17; --sec-gap: 7pt; --entry-gap: 4pt; --margin-x: 0.45in; --margin-y: 0.45in; }
+
+@page { size: Letter; margin: 0; }
+html, body { margin: 0; }
+body { font-family: Lato, "Helvetica Neue", Arial, sans-serif; font-size: var(--fs); line-height: var(--lh); color: #000; }
+#page { width: 8.5in; height: 11in; box-sizing: border-box; padding: var(--margin-y) var(--margin-x); overflow: hidden; }
+
+h1 { font-size: 1.6em; font-weight: 700; text-align: center; margin: 0; line-height: 1.1; }
+.contact { text-align: center; margin: 1pt 0 0; }
+h2 { font-size: 1.05em; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #000;
+     margin: var(--sec-gap) 0 3pt; padding-bottom: 1pt; }
+.entry { margin-top: var(--entry-gap); }
+h2 + .entry { margin-top: 0; }
+.head { display: flex; justify-content: space-between; gap: 12pt; }
+.head .date { white-space: nowrap; flex-shrink: 0; }
+.sub { font-style: italic; margin: 0; }
+ul { margin: 0; padding-left: 1.5em; }
+li { margin: 0; }
+.skills p { margin: 0; }

@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Alex Example Resume</title>
+<link rel="stylesheet" href="../resumes/resume.css"></head>
+<body><main id="page"><div id="content">
+<!-- Example only (made-up person). Setup builds your own resumes/base.html with this same structure:
+     each job or project is a div.entry with a .head line (title left, date in span.date right),
+     an optional p.sub line, and a ul of bullets. Keep the <link> and <script> tags as they are. -->
+
+<h1>ALEX EXAMPLE</h1>
+<p class="contact">555-555-0100 &nbsp;|&nbsp; alex@example.com &nbsp;|&nbsp; github.com/alex-example &nbsp;|&nbsp; linkedin.com/in/alex-example &nbsp;|&nbsp; Atlanta, GA</p>
+
+<h2>Education</h2>
+<div class="entry">
+<div class="head"><span><b>Example University</b> – M.S., Computer Science &nbsp;|&nbsp; GPA: 3.8</span><span class="date">Aug 2025 – May 2027 (expected)</span></div>
+<p class="sub">Coursework: Distributed Systems, Databases, Computer Networks, Machine Learning</p>
+</div>
+<div class="entry">
+<div class="head"><span><b>Sample State University</b> – B.S., Computer Science &nbsp;|&nbsp; GPA: 3.6</span><span class="date">Sep 2021 – May 2025</span></div>
+</div>
+
+<h2>Professional Experience</h2>
+<div class="entry">
+<div class="head"><span><b>Acme Logistics</b> – Software Engineer Intern</span><span class="date">May 2024 – Aug 2024</span></div>
+<ul>
+<li>Built a REST service in Java and Spring Boot that tracks 20,000 daily shipments, replacing a nightly batch job.</li>
+<li>Cut report load time from 9 s to 1.5 s by adding PostgreSQL indexes and caching the three slowest queries.</li>
+<li>Wrote integration tests in JUnit and added them to the GitHub Actions pipeline, catching 4 regressions before release.</li>
+</ul>
+</div>
+
+<h2>Projects</h2>
+<div class="entry">
+<div class="head"><span><b>Course Planner (React, TypeScript, Node.js)</b></span><span class="date">Jan 2025 – May 2025</span></div>
+<ul>
+<li>Built a web app that plans degree schedules from prerequisite rules; used by 300 students in its first semester.</li>
+<li>Designed the MongoDB schema and a Node.js API; deployed with Docker on a small cloud VM.</li>
+</ul>
+</div>
+<div class="entry">
+<div class="head"><span><b>Multi-threaded Web Crawler (C++)</b></span><span class="date">Sep 2024 – Dec 2024</span></div>
+<ul>
+<li>Wrote a crawler with a thread pool and a lock-protected work queue that fetches 500 pages per minute.</li>
+</ul>
+</div>
+
+<h2>Technical Skills</h2>
+<div class="skills">
+<p><b>Languages:</b> Java, Python, TypeScript/JavaScript, C++, SQL</p>
+<p><b>Tools:</b> Spring Boot, React, Node.js, PostgreSQL, MongoDB, Docker, GitHub Actions, Git, Linux</p>
+</div>
+
+</div></main>
+<script src="../resumes/fill.js"></script>
+</body></html>

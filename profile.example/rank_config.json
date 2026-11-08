@@ -1,0 +1,157 @@
+{
+ "_comment": "Example settings for rank_jobs.py: an entry-level software engineer near Atlanta on F-1 OPT. Setup writes your own copy to profile/rank_config.json. All patterns are Python regular expressions matched against lowercase text.",
+ "site_order": [
+  "LinkedIn",
+  "Indeed",
+  "Handshake",
+  "Glassdoor",
+  "Hiring Cafe",
+  "Workday",
+  "Greenhouse",
+  "Jobright"
+ ],
+ "_site_order": "Order of the site groups in the CSV. A job found on several sites is listed under the first one. Sites not listed go last.",
+ "max_age_hours": {
+  "LinkedIn": 96,
+  "Handshake": 1440,
+  "Glassdoor": 168,
+  "Hiring Cafe": 336,
+  "Workday": 720,
+  "Greenhouse": 720,
+  "Jobright": 168
+ },
+ "_max_age_hours": "Drop jobs posted longer ago than this, per site. Add \"default\" for sites not listed. Career-site jobs stay open for weeks.",
+ "min_fit": 16,
+ "_min_fit": "Main quality bar. Raise it if lists get too long.",
+ "top_n_per_site": null,
+ "titles": {
+  "include": "software|developer|full.?stack|front.?end|back.?end|\\bsde\\b|\\bsdet\\b|programmer|new grad|graduate|early career|\\bai\\b|artificial intelligence|genai|machine learning eng|\\bml engineer|forward deployed|ci/cd|devops|automation engineer|\\bqa\\b|quality engineer|engineer in test|platform engineer|application engineer|web engineer|engineer i\\b|engineer 1\\b|engineer asc",
+  "exclude": "senior|distinguished|\\bsr\\b|staff|principal|\\blead\\b|manager|director|architect|\\biii\\b|\\biv\\b|\\b[3-5]\\b|intern\\b|internship|co-?op|consultant|specialist|technician|salesforce|servicenow|peoplesoft|\\bsas\\b|\\bsap\\b|\\btpm\\b|ui/ux|controls|field service|manufacturing|administrator|robotics systems|\\bgtm\\b|ignition|power platform|instrumentation|navigation|sales engineer|\\bphp\\b|research engineer|traveling|month-long|mainframe|operations management|\\bphd\\b|reverse engineer|mid.?level|experienced|cobol|\\.net developer|part.?time|contract|tutor|teacher|instructor|trainer|hardware|electrical|mechanical|firmware|embedded|fpga|verification|network engineer|sre\\b|site reliability|data engineer|data scientist|ios|android|unity|game|lustre|gpu|diagnostics",
+  "exclude_unless_core": "analyst|security|reporting",
+  "core": "developer|software engineer|programmer",
+  "role_bonus": "software (engineer|developer)|full.?stack|back.?end|front.?end",
+  "_comment": "include: a title must match this. exclude: drop if it matches. exclude_unless_core: drop unless the title also matches core. role_bonus: +8 fit when the title names the main role."
+ },
+ "seniority": {
+  "max_years": 2,
+  "years_bonus": {
+   "0": 6,
+   "1": 4,
+   "2": 1
+  },
+  "title_bonus": "new grad|entry|junior|\\bjr\\b|associate|early career|emerging career|graduate|\\bgrads?\\b|\\bi\\b|\\b1\\b|level 1",
+  "desc_bonus": "new grad|recent graduate|entry.level|0.?[-–]\\s*2 years|0\\+? years|no experience",
+  "title_penalty": "\\b(ii|2)\\b",
+  "_comment": "max_years: drop jobs asking for more years than this (null = no limit). years_bonus: fit points by the minimum years asked. title_bonus +12, desc_bonus +6, title_penalty -6."
+ },
+ "skills": {
+  "Python": {
+   "pattern": "\\bpython\\b",
+   "weight": 3
+  },
+  "Java": {
+   "pattern": "\\bjava\\b(?!script)",
+   "weight": 3
+  },
+  "C/C++": {
+   "pattern": "c\\+\\+|\\bc/c\\+\\+|\\bc(?=[,/ ]\\s*(?:c\\+\\+|java|python))",
+   "weight": 2
+  },
+  "JS/TS": {
+   "pattern": "javascript|typescript|\\bnode",
+   "weight": 3
+  },
+  "React": {
+   "pattern": "\\breact",
+   "weight": 3
+  },
+  "SQL DBs": {
+   "pattern": "mysql|postgres|mongo|\\bsql\\b",
+   "weight": 3
+  },
+  "Linux/Unix": {
+   "pattern": "linux|unix",
+   "weight": 2
+  },
+  "CI/CD": {
+   "pattern": "ci/cd|github actions|continuous integration|jenkins|gitlab ci",
+   "weight": 2
+  },
+  "Git": {
+   "pattern": "\\bgit\\b|github",
+   "weight": 1
+  },
+  "AI tools": {
+   "pattern": "codex|claude|copilot|\\bllm|generative ai|cursor|\\bgenai\\b",
+   "weight": 2
+  },
+  "Cloud": {
+   "pattern": "\\baws\\b|azure|\\bgcp\\b|docker|kubernetes",
+   "weight": 1
+  }
+ },
+ "_skills": "Fit points for each skill the description mentions. Weights here add up to 25.",
+ "min_salary": 75000,
+ "_min_salary": "Annual. Drop jobs whose top of range is below this; jobs with no salary are kept and flagged. null turns it off.",
+ "work_authorization": {
+  "status": "f1_opt",
+  "exclude_clearance_jobs": true,
+  "_comment": "status: us_citizen, green_card, f1_opt (drops citizen-only, green-card-only and no-OPT jobs; flags no-sponsorship) or needs_sponsorship (also drops jobs that won't sponsor a visa). exclude_clearance_jobs: drop jobs that need a security clearance."
+ },
+ "locations": {
+  "tiers": [
+   {
+    "tier": 1,
+    "name": "Atlanta area",
+    "match": "atlanta, georgia|atlanta|alpharetta|marietta|kennesaw|sandy springs|smyrna, ga|duluth, ga|roswell|norcross|decatur, ga|peachtree|johns creek|dunwoody|lawrenceville|buckhead|midtown|cumberland|tucker, ga|chamblee|doraville|brookhaven|fairburn|college park, ga|east point|union city, ga|stockbridge|mcdonough|conyers|cumming, ga|buford|suwanee|woodstock, ga|canton, ga|douglasville|austell|mableton|lithonia|stone mountain|snellville|milton, ga"
+   },
+   {
+    "tier": 2,
+    "name": "Within 4h drive",
+    "match": "birmingham|huntsville|chattanooga|nashville|brentwood, tn|franklin, tn|hermitage|greenville, sc|spartanburg|charlotte|columbia, sc|macon|savannah|augusta|knoxville|montgomery|tuscaloosa|asheville|athens, ga|columbus, ga|auburn, al|anderson, sc"
+   },
+   {
+    "tier": 2,
+    "name": "Eastern time",
+    "state_codes": [
+     "GA",
+     "FL",
+     "SC",
+     "NC",
+     "VA",
+     "WV",
+     "MD",
+     "DE",
+     "PA",
+     "NJ",
+     "NY",
+     "CT",
+     "RI",
+     "MA",
+     "VT",
+     "NH",
+     "ME",
+     "OH",
+     "MI",
+     "IN",
+     "KY",
+     "DC"
+    ],
+    "match": "tennessee|alabama|delaware|rhode island|new hampshire|maine|vermont|michigan|indiana|kentucky|west virginia|district of columbia|new york|boston|washington,? ?d\\.?c|philadelphia|pittsburgh|miami|tampa|orlando|raleigh|durham|richmond|baltimore|arlington, va|mclean|reston|columbus, oh|cleveland|detroit|jersey city|hoboken|cambridge, ma|georgia|florida|north carolina|south carolina|virginia|maryland|massachusetts|ohio|pennsylvania|new jersey|connecticut"
+   }
+  ],
+  "remote": {
+   "tier": 2,
+   "name": "Remote (US)"
+  },
+  "other": null,
+  "_comment": "Tiers are checked in order; the first match wins. match: regex on the lowercase location. state_codes: matches ', GA' style codes. remote: tier for remote jobs (null drops them). other: tier for everything else (null drops it)."
+ },
+ "use_default_company_blocklist": true,
+ "exclude_companies": "",
+ "_exclude_companies": "Extra regex of company names to drop, on top of the built-in staffing and OPT-placement firm list.",
+ "flags": {
+  "2027 start": "\\b2027\\b"
+ },
+ "_flags": "Note label -> regex checked on the title and start of the description. Matches are noted, not dropped."
+}
