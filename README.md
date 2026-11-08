@@ -24,7 +24,7 @@ You still submit every application yourself.
 Keep your copy in a private repository that only you can see, because it will hold your resumes and job list. Don't use GitHub's Fork button: a fork of a private repo stays visible to the repo's owner, and it's deleted if your access is removed.
 
 ```
-git clone <template repo URL> job-search
+git clone https://github.com/sli857/GETTUHJOB.git job-search
 cd job-search
 git remote rename origin template
 ```
