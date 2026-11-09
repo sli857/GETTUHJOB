@@ -3,6 +3,8 @@
 # Prints the HTML to a Letter PDF with headless Chrome, then reports:
 #   pages=N   (must be 1)
 #   fill=0.NN (share of the page height used by content; aim for 0.95-0.99)
+#   warning=  (only when fill is over 1.00)
+# The page hides overflow, so pages is always 1 and only fill shows cut-off content.
 set -e
 HTML="${1:A}"
 OUT="${2:-${HTML:r}.pdf}"
@@ -29,3 +31,6 @@ rm -rf "$TMP"
 echo "pdf=$OUT"
 echo "pages=$PAGES"
 echo "fill=${FILL:-unknown}"
+if [[ -n "$FILL" ]] && (( FILL > 1.0 )); then
+  echo "warning=content is cut off at the bottom (fill over 1.00). Trim it."
+fi
