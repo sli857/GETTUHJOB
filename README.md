@@ -66,6 +66,7 @@ Start each step in a **new chat**, from this folder. In Claude Code or Codex, ty
 | **Second time** | `@fresh_search.md` | **Test run, about 20 minutes, at most $2.** It tries every likely job site with a small search, shows how many good jobs each one found and what they cost, and you pick the sites to keep. It saves your first ranked list. |
 | **Each search after that** | `@fresh_search.md` | **Normal search, about 15 minutes.** It searches your chosen sites and saves `search_results/top_jobs_<date>.csv`, best jobs first. Jobs you've already handled are left out. |
 | **To apply** | `@tailor-resumes.md` | **Tailored resumes.** It works through the next 5 jobs on the list: checks if each one fits, and builds a tailored one-page PDF in `tailored/`. You can also add a number (`@tailor-resumes.md 3`), a list position (`#12`), or a job link or description. |
+| **Any time** | `python3 dashboard.py` in a terminal | **Dashboard.** Opens a page in your browser to review and edit your profile, ranking rules and search plan, and to browse your job lists, applications, resumes and past searches. It only edits files in `profile/`. Stop it with Ctrl-C. |
 | **Many jobs, unattended** | `./run_batches.sh 4` in a terminal | Runs 4 tailoring sessions of 5 jobs in a row with Claude Code. Use `./run_batches.sh 4 --codex` for Codex. It stops early when the list runs out or a session logs nothing. Each session uses your AI subscription, so start small. |
 
 Indeed blocks automated page reads, so tailoring skips Indeed jobs. Open those links yourself.
@@ -79,6 +80,7 @@ Indeed blocks automated page reads, so tailoring skips Indeed jobs. Open those l
 | `apify.py` | Starts Apify scrapers, enforces the budget, downloads results | template |
 | `rank_jobs.py` | Filters and ranks jobs using `profile/rank_config.json` | template |
 | `fetch_job.py` | Prints a job page as text (for assistants without a web tool) | template |
+| `dashboard.py`, `dashboard/` | Local dashboard (`python3 dashboard.py`) | template |
 | `run_batches.sh` | Several tailoring sessions in a row | template |
 | `profile.example/` | Example profile (a made-up entry-level software engineer) | template |
 | `resumes/resume.css`, `fill.js`, `fonts/`, `render.sh`, `example_base.html` | Resume style and the HTML-to-PDF script | template |

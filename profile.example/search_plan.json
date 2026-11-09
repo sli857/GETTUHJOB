@@ -1,5 +1,5 @@
 {
- "_comment": "Example plan for a normal search (entry-level software engineer near Atlanta). The test run writes your own to profile/search_plan.json. Run it with: python3 apify.py run profile/search_plan.json --budget <USD> --out search_results/raw/<date>. Fields per run: site (label in the CSV), parser (see sites_catalog.md), actor, max_charge_usd (cap for this run), optional min_charge_usd and max_items, input (the scraper's own input).",
+ "_comment": "Example plan for a normal search (entry-level software engineer near Atlanta). The test run writes your own to profile/search_plan.json. Run it with: python3 apify.py run profile/search_plan.json --budget <USD> --out search_results/raw/<date>. Fields per run: site (label in the CSV), parser (see sites_catalog.md), actor, max_charge_usd (cap for this run), optional min_charge_usd, max_items and enabled (false turns the run off), input (the scraper's own input).",
  "runs": [
   {
    "site": "LinkedIn",

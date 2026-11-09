@@ -18,7 +18,7 @@ Follow the file they send.
   - `.env`
 - **Template files must stay generic,** so updates can be shared:
   - `README.md`, `setup.md`, `fresh_search.md`, `tailor-resumes.md`, `sites_catalog.md`, `AGENTS.md`, `CLAUDE.md`
-  - `*.py`, `*.sh`
+  - `*.py`, `*.sh`, `dashboard/`
   - `profile.example/`
   - `resumes/example_base.html`, `resume.css`, `fill.js`
 - **Never read or print `.env`.** It holds the Apify token.

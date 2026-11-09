@@ -164,12 +164,16 @@ def cmd_run(a):
 
     prices = {}
     for e in entries:
-        if e['actor'] not in prices:
+        if e.get('enabled') is not False and e['actor'] not in prices:
             prices[e['actor']] = pricing(e['actor'])
 
-    runs = []
-    for i, e in enumerate(entries):
+    runs, parked = [], []   # parked: earlier records of runs now turned off ("enabled": false); their cost still counts
+    for i, e in enumerate(entries):   # index over all entries, so keys stay the same when runs are turned on or off
         k = entry_key(i, e)
+        if e.get('enabled') is False:
+            if k in old:
+                parked.append(old[k])
+            continue
         r = old.get(k) or dict(key=k, site=e['site'], parser=e.get('parser', 'generic'), actor=e['actor'],
                                note=e.get('note', ''), run_id=None, dataset_id=None, status='PENDING',
                                items=0, cost_usd=0.0, cap_usd=None, attempts=0, error='')
@@ -177,9 +181,11 @@ def cmd_run(a):
         if r['status'] in ('ABORTED-BUDGET', 'SKIPPED-BUDGET', 'START-FAILED', 'ABORTED-BY-USER'):  # give these another chance
             r.update(status='PENDING', attempts=0, prev_cost_usd=r['cost_usd'])
         runs.append(r)
+    off = sum(e.get('enabled') is False for e in entries)
+    parked_cost = sum(r.get('cost_usd') or 0 for r in parked)
 
     def save():
-        json.dump([{k: v for k, v in r.items() if k != '_entry'} for r in runs], open(state_path, 'w'), indent=1)
+        json.dump([{k: v for k, v in r.items() if k != '_entry'} for r in runs] + parked, open(state_path, 'w'), indent=1)
 
     def live_cost(r, run):
         c = run.get('usageTotalUsd') or 0
@@ -224,7 +230,8 @@ def cmd_run(a):
                 r['status'] = 'SKIPPED-BUDGET'
         save()
 
-    print(f'Budget ${a.budget:.2f}. {len(runs)} runs in the plan, {sum(r["status"] == "PENDING" for r in runs)} to start.')
+    print(f'Budget ${a.budget:.2f}. {len(runs)} runs in the plan, {sum(r["status"] == "PENDING" for r in runs)} to start.'
+          + (f' {off} turned off.' if off else ''))
     try:
         while True:
             # 1. update running runs
@@ -244,14 +251,14 @@ def cmd_run(a):
                         r['status'] = 'PENDING'
                         r['prev_cost_usd'] = r['cost_usd']
                     save()
-            spent = sum(r['cost_usd'] for r in runs)
+            spent = sum(r['cost_usd'] for r in runs) + parked_cost
             if spent >= a.budget:
                 print(f'Budget reached (${spent:.2f}). Stopping all runs.')
                 abort_all('ABORTED-BUDGET')
                 break
             # 2. start pending runs while there is room and budget
             running = [r for r in runs if r['status'] == 'RUNNING']
-            free = a.budget - sum(r['cost_usd'] for r in runs if r['status'] != 'RUNNING') \
+            free = a.budget - parked_cost - sum(r['cost_usd'] for r in runs if r['status'] != 'RUNNING') \
                    - sum(max(reserve(r), r['cost_usd']) for r in running)
             for r in runs:
                 if r['status'] != 'PENDING' or len(running) >= a.parallel:
@@ -313,7 +320,7 @@ def cmd_run(a):
     print(f"\n{'site':<14} {'actor':<40} {'status':<15} {'items':>6} {'cost':>7}")
     for r in runs:
         print(f"{r['site'][:14]:<14} {r['actor'][:40]:<40} {r['status']:<15} {r['items']:>6} ${r['cost_usd']:>6.3f}")
-    print(f"Total: {sum(r['items'] for r in runs)} items, ${sum(r['cost_usd'] for r in runs):.2f} of the ${a.budget:.2f} budget.")
+    print(f"Total: {sum(r['items'] for r in runs)} items, ${sum(r['cost_usd'] for r in runs) + parked_cost:.2f} of the ${a.budget:.2f} budget.")
     print('Costs shown are what Apify reports per run; check the Apify console Billing page for the final number.')
 
 

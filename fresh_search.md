@@ -102,7 +102,8 @@ python3 rank_jobs.py search_results/raw/test_<today> search_results/top_jobs_<to
 ## Normal run
 
 1. **Read the plan.** Read `profile/search_notes.md` for the budget, and summarize `profile/search_plan.json` in one line per site.
-   - If the summed `max_charge_usd` of the runs is within the budget, go ahead.
+   - Runs with `"enabled": false` are turned off: `apify.py` skips them. Leave them out of the summary and the sum below.
+   - If the summed `max_charge_usd` of the runs that are on is within the budget, go ahead.
    - If not, show the numbers and ask first.
 2. **Run it:**
    ```
