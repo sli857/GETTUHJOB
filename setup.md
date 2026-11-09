@@ -95,7 +95,7 @@ Ask in this order, a few at a time. Skip anything the resume already answers cle
 
 ## Step 5: Write the profile
 
-1. **`profile/about_me.md`.** Follow the sections of `profile.example/about_me.md`, filled with their answers. Add a short "Resume tips" section saying which items in `general.md` suit which kinds of roles.
+1. **`profile/about_me.md`.** Follow the sections of `profile.example/about_me.md`, filled with their answers. Keep the "Resume tips" section short. Don't list which projects suit which roles, because tailoring picks the best matches from all of `general.md` for each job. Only add notes the tailoring steps can't know, such as a second resume file that's also a source of facts.
 2. **`profile/rank_config.json`.** Start from `profile.example/rank_config.json`, which is set up for entry-level software jobs near Atlanta, and adapt every part to the user:
    - **`titles.include`:** words that appear in titles of jobs they want. Make it broad; `exclude` does the narrowing.
    - **`titles.exclude`:**

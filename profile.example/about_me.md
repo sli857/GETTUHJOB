@@ -46,9 +46,9 @@ Python, Java, C/C++, JavaScript/TypeScript, React, SQL databases, Linux, CI/CD, 
 
 ## Resume tips
 
-Which resume items to use for which jobs (from `resumes/general.md`):
-- **Backend / data roles:** the inventory system and the data pipeline project.
-- **Systems / C++ roles:** the HTTP proxy and the scheduler project.
+- **No fixed project list.** For each job, read the description and pick the experience, projects and bullets from all of `resumes/general.md` that match it best. I add new projects to `general.md` over time, so don't assume the ones in `base.html` are the best picks.
+
+<!-- Add only notes the tailoring steps can't know, e.g. "resumes/one_page.md is also a source of facts." -->
 
 ## Notes
 
