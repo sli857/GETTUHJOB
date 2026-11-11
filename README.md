@@ -69,7 +69,7 @@ Start each step in a **new chat**, from this folder. In Claude Code or Codex, ty
 | **Any time** | `python3 dashboard.py` in a terminal | **Dashboard.** Opens a page in your browser to review and edit your profile, ranking rules and search plan, and to browse your job lists, applications, resumes and past searches. It only edits files in `profile/`. Stop it with Ctrl-C. |
 | **Many jobs, unattended** | `./run_batches.sh 4` in a terminal | Runs 4 tailoring sessions of 5 jobs in a row with Claude Code. Use `./run_batches.sh 4 --codex` for Codex. It stops early when the list runs out or a session logs nothing. Each session uses your AI subscription, so start small. |
 
-Indeed blocks automated page reads, so tailoring skips Indeed jobs. Open those links yourself.
+Each search saves the description of every listed job in `search_results/jd/`, so tailoring reads it from there instead of opening the page. That's how Indeed jobs (which block automated page reads) and login-only Handshake pages get tailored resumes too. Jobright and Hiring Cafe don't provide descriptions, so those pages are still opened. A saved description doesn't show whether the job has closed since the search.
 
 ## What's in this folder
 
@@ -78,15 +78,15 @@ Indeed blocks automated page reads, so tailoring skips Indeed jobs. Open those l
 | `README.md`, `setup.md`, `fresh_search.md`, `tailor-resumes.md` | Instructions for you and the assistant | template |
 | `sites_catalog.md` | Job site scrapers that work, with prices and example inputs | template |
 | `apify.py` | Starts Apify scrapers, enforces the budget, downloads results | template |
-| `rank_jobs.py` | Filters and ranks jobs using `profile/rank_config.json` | template |
-| `fetch_job.py` | Prints a job page as text (for assistants without a web tool) | template |
+| `rank_jobs.py` | Filters and ranks jobs using `profile/rank_config.json`, and saves each listed job's description | template |
+| `fetch_job.py` | Prints a job's saved description, or the job page as text | template |
 | `dashboard.py`, `dashboard/` | Local dashboard (`python3 dashboard.py`) | template |
 | `run_batches.sh` | Several tailoring sessions in a row | template |
 | `profile.example/` | Example profile (a made-up entry-level software engineer) | template |
 | `resumes/resume.css`, `fill.js`, `fonts/`, `render.sh`, `example_base.html` | Resume style and the HTML-to-PDF script | template |
 | `profile/` | Your details, ranking rules, chosen sites and search budget | yours |
 | `resumes/originals/`, `general.md`, `one_page.md`, `base.html` | Your resumes | yours |
-| `search_results/` | Your ranked job lists. Raw scraper data in `raw/` isn't uploaded | yours |
+| `search_results/` | Your ranked job lists. Raw scraper data in `raw/` and saved job descriptions in `jd/` aren't uploaded | yours |
 | `applications.csv`, `tailored/` | Log of jobs handled, and tailored resumes | yours |
 | `.env` | Your Apify token, never uploaded | yours |
 

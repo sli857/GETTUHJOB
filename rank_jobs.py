@@ -3,7 +3,10 @@ in apply order (grouped by site, then location tier, then fit score).
 
 Usage:
   python3 rank_jobs.py <folder with downloaded results> <output.csv> [--config profile/rank_config.json]
-                       [--now 2026-11-06T15:45] [--stats stats.json]
+                       [--now 2026-11-06T15:45] [--stats stats.json] [--no-jd]
+
+It also saves the description of every job it keeps to search_results/jd/ (see fetch_job.py), so
+tailoring can read it without fetching the page. --no-jd turns that off.
 
 The folder is what `apify.py run --out` writes: one <datasetId>.json per run plus runs.json.
 Every personal rule (titles, skills, locations, salary, work authorization) lives in the config file,
@@ -11,6 +14,7 @@ written during setup. See profile.example/rank_config.json for an example with c
 """
 import json, glob, re, csv, sys, html, os, argparse
 from datetime import datetime, timezone, timedelta
+from fetch_job import jd_path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ap = argparse.ArgumentParser()
@@ -21,6 +25,7 @@ ap.add_argument('--log', default=os.path.join(HERE, 'applications.csv'), help='j
 ap.add_argument('--stats', help='also write per-site statistics to this JSON file')
 ap.add_argument('--dropped', help='also write dropped jobs (site, reason, title, company, location, url) to this CSV')
 ap.add_argument('--check', action='store_true', help='only check that the config is valid')
+ap.add_argument('--no-jd', action='store_true', help="don't save job descriptions to search_results/jd/")
 A = ap.parse_args()
 if not os.path.exists(A.config):
     sys.exit(f'No config at {A.config}. Run setup first (send README.md to your AI assistant).')
@@ -233,7 +238,7 @@ for site, k, j in rows('jobright'):         # datascraperes/jobright-jobs-scrape
         salary=money([x for x in (j.get('salaryAnnualMin'), j.get('salaryAnnualMax')) if has(x)]),
         desc='\n'.join(str(p) for p in parts if p), yrs=j.get('minYearsOfExperience'),
         citizen_only=str(j.get('isCitizenOnly')) == 'True', clearance=str(j.get('isClearanceRequired')) == 'True',
-        url=j.get('applyLink') or j.get('url')))
+        url=j.get('applyLink') or j.get('url'), summary_only=True))
 
 for site, k, j in rows('generic'):          # any other scraper: guess the common field names
     title = first(j, 'title', 'jobTitle', 'positionName', 'position', 'name')
@@ -411,7 +416,8 @@ for j in jobs:
         drop(j, 'low fit score'); continue
     out.append(dict(platform=j['platform'], tier=tr, area=area, fit_score=score, title=t, company=j['company'],
         location=j['location'], posted=(j['posted'].strftime('%Y-%m-%d') if j['posted'] else j['posted_txt']),
-        salary=k_range(s), min_yrs='' if y is None else y, skills=', '.join(sk), notes='; '.join(notes), url=j['url']))
+        salary=k_range(s), min_yrs='' if y is None else y, skills=', '.join(sk), notes='; '.join(notes), url=j['url'],
+        _desc='' if j.get('summary_only') else j['desc']))
 
 # ---------- order: by site, then location tier, then fit ----------
 sites = SITE_ORDER + sorted({r['platform'] for r in out} - set(SITE_ORDER))
@@ -431,6 +437,7 @@ for plat in sites:
         counts[plat] = (len(cand), len(picked))
     for i, r in enumerate(picked, 1):
         final.append(dict(apply_order=len(final) + 1, platform=plat, platform_rank=i, **{k: v for k, v in r.items() if k != 'platform'}))
+descs = {r['url']: r.pop('_desc') for r in final}
 
 print('candidates/picked per site:', counts)
 print('drops:', drops)
@@ -445,6 +452,21 @@ os.makedirs(os.path.dirname(A.out) or '.', exist_ok=True)
 with open(A.out, 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=list(final[0]))
     w.writeheader(); w.writerows(final)
+if not A.no_jd:
+    saved = 0
+    for r in final:
+        d = (descs.get(r['url']) or '').strip()
+        if not r['url'] or len(d) < 300:     # too short to be a real posting (or a Jobright summary)
+            continue
+        p = jd_path(r['url'])
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        head = [f"SAVED DESCRIPTION (scraped {NOW.strftime('%Y-%m-%d')}; the posting may have closed since)",
+                f"{r['title']} | {r['company']} | {r['location']} | salary: {r['salary'] or 'not listed'} | {r['platform']}",
+                r['url'], '']
+        with open(p, 'w', encoding='utf-8') as fh:
+            fh.write('\n'.join(head) + '\n' + d + '\n')
+        saved += 1
+    print(f'saved {saved} of {len(final)} descriptions to search_results/jd/')
 for r in final:
     print(r['platform'][:4], r['platform_rank'], r['tier'], r['fit_score'], '|', r['title'][:55], '|', r['company'][:25], '|', r['location'][:25], '|', r['salary'], '|', r['notes'][:60])
 

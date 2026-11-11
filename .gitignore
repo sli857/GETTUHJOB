@@ -3,6 +3,7 @@
 
 # Large or temporary files
 search_results/raw/
+search_results/jd/
 logs/
 __pycache__/
 .mypy_cache/

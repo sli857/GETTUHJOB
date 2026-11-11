@@ -32,22 +32,22 @@ Read `about_me.md`, `general.md` and `base.html` once at the start of the sessio
 
 ### 2. Get the job description
 
-**Indeed jobs (`url` contains `indeed.com`): skip them.**
-- Don't fetch them (Indeed blocks automated fetches), and don't ask me for the description.
-- Log the job as `skip` with reason `Indeed posting`, and report it as `#41 Acme, Analyst: SKIP (Indeed)`.
-- Go on to the next job. It counts toward the batch.
+**First, every job:** run `python3 fetch_job.py "<url>" --saved-only`.
+- **If it prints `SAVED DESCRIPTION`,** that's the posting text saved during the search. Use it and don't fetch the page. Read it to the end, since clearance and visa lines are often last. Don't repeat it in chat.
+- **If it prints `NO SAVED DESCRIPTION`:**
+  - **Indeed jobs (`url` contains `indeed.com`): skip them.** Don't fetch them (Indeed blocks automated fetches), and don't ask me for the description. Log the job as `skip` with reason `Indeed posting, no saved description`, and report it as `#41 Acme, Analyst: SKIP (Indeed, no saved description)`. Go on to the next job. It counts toward the batch.
+  - **All other jobs:** fetch the `url`.
+    - **If you have a web fetch tool** (Claude Code's WebFetch, or its web-fetch agent), use it. Ask for only the parts listed below.
+    - **Otherwise** (e.g. Codex), run `python3 fetch_job.py "<url>"`, which prints the page text.
 
-**All other jobs:**
-1. Fetch the `url`:
-   - **If you have a web fetch tool** (Claude Code's WebFetch, or its web-fetch agent), use it. Ask for only the parts listed below.
-   - **Otherwise** (e.g. Codex), run `python3 fetch_job.py <url>`, which prints the page text.
-2. The parts you need:
-   - work authorization, visa, citizenship or clearance text
-   - years of experience
-   - required and preferred skills
-   - a 2-line role summary
-   - location and salary
-3. If the page fails to load or needs a login (Handshake always does, and LinkedIn sometimes does), log the job as `blocked` and move on.
+The parts you need:
+- work authorization, visa, citizenship or clearance text
+- years of experience
+- required and preferred skills
+- a 2-line role summary
+- location and salary
+
+If a fetched page fails to load or needs a login (Handshake always does, and LinkedIn sometimes does), log the job as `blocked` and move on.
 
 ### 3. Decide: apply or skip
 
@@ -123,6 +123,8 @@ After each job, write one short block in chat:
 Resume: tailored/<Prefix>-resume-acme.pdf (added the course planner, cut the crawler; fill 0.97)
 Link: <url>
 ```
+
+If the description came from a saved file, add `(saved JD)` at the end of the first line, since that job may have closed after the search.
 
 For a skip: `#4 Acme, Engineer II: SKIP (requires US citizenship)`.
 
