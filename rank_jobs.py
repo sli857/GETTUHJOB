@@ -24,6 +24,7 @@ ap.add_argument('--now', help='ISO time to measure job age from (default: now)')
 ap.add_argument('--log', default=os.path.join(HERE, 'applications.csv'), help='jobs already handled')
 ap.add_argument('--stats', help='also write per-site statistics to this JSON file')
 ap.add_argument('--dropped', help='also write dropped jobs (site, reason, title, company, location, url) to this CSV')
+ap.add_argument('--detail', help='also write every parsed job with its run(s) and outcome to this CSV (for analyze_sites.py)')
 ap.add_argument('--check', action='store_true', help='only check that the config is valid')
 ap.add_argument('--no-jd', action='store_true', help="don't save job descriptions to search_results/jd/")
 A = ap.parse_args()
@@ -98,14 +99,19 @@ for f in sorted(glob.glob(os.path.join(A.src, '*.json')) + glob.glob(os.path.joi
     for it in items:
         it = flatten(it)
         k = str(it.get('jobId') or it.get('key') or it.get('id') or it.get('url') or it.get('jobUrl') or len(bucket))
-        bucket.setdefault(k, {}).update(it)
+        row = bucket.setdefault(k, {})
+        row.update(it)
+        row.setdefault('_runs', []).append(meta.get('key') or ds)   # which run(s) found this job
     raw_count[site] = raw_count.get(site, 0) + len(items)
 
 def rows(parser):
     for (p, site), b in raw.items():
         if p == parser:
             for k, j in b.items():
+                n = len(jobs)
                 yield site, k, j
+                if len(jobs) > n:               # the parser added a job for this row: remember its runs
+                    jobs[-1]['runs'] = j.get('_runs', [])
 
 def g(j, key):
     """Read 'a.b' from a flattened row (key 'a.b') or a nested one (j['a']['b'])."""
@@ -352,6 +358,7 @@ def drop(j, reason):
     drops[reason] = drops.get(reason, 0) + 1
     sd = site_drops.setdefault(j['platform'], {})
     sd[reason] = sd.get(reason, 0) + 1
+    j['outcome'] = reason
     dropped.append(dict(site=j['platform'], reason=reason, title=j['title'], company=j['company'],
                         location=j['location'], url=j['url']))
 
@@ -417,7 +424,8 @@ for j in jobs:
     out.append(dict(platform=j['platform'], tier=tr, area=area, fit_score=score, title=t, company=j['company'],
         location=j['location'], posted=(j['posted'].strftime('%Y-%m-%d') if j['posted'] else j['posted_txt']),
         salary=k_range(s), min_yrs='' if y is None else y, skills=', '.join(sk), notes='; '.join(notes), url=j['url'],
-        _desc='' if j.get('summary_only') else j['desc']))
+        _desc='' if j.get('summary_only') else j['desc'], _job=j))
+    j.update(outcome='passed', tier=tr, fit_score=score)
 
 # ---------- order: by site, then location tier, then fit ----------
 sites = SITE_ORDER + sorted({r['platform'] for r in out} - set(SITE_ORDER))
@@ -428,15 +436,18 @@ for plat in sites:
     for r in cand:
         k = norm(r)
         if k in seen:
+            r['_job']['outcome'] = 'duplicate (listed under an earlier site)'
+            continue
+        if TOP_N and len(picked) == TOP_N:
+            r['_job']['outcome'] = 'over top_n_per_site'
             continue
         seen.add(k)
         picked.append(r)
-        if TOP_N and len(picked) == TOP_N:
-            break
+        r['_job']['outcome'] = 'kept'
     if cand:
         counts[plat] = (len(cand), len(picked))
     for i, r in enumerate(picked, 1):
-        final.append(dict(apply_order=len(final) + 1, platform=plat, platform_rank=i, **{k: v for k, v in r.items() if k != 'platform'}))
+        final.append(dict(apply_order=len(final) + 1, platform=plat, platform_rank=i, **{k: v for k, v in r.items() if k not in ('platform', '_job')}))
 descs = {r['url']: r.pop('_desc') for r in final}
 
 print('candidates/picked per site:', counts)
@@ -446,6 +457,18 @@ if A.dropped:
     with open(A.dropped, 'w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=['site', 'reason', 'title', 'company', 'location', 'url'])
         w.writeheader(); w.writerows(sorted(dropped, key=lambda d: (d['reason'], d['site'])))
+if A.detail:
+    os.makedirs(os.path.dirname(A.detail) or '.', exist_ok=True)
+    with open(A.detail, 'w', newline='') as fh:
+        w = csv.DictWriter(fh, fieldnames=['site', 'runs', 'key', 'outcome', 'tier', 'fit_score', 'age_h',
+                                           'title', 'company', 'location', 'url'])
+        w.writeheader()
+        for j in jobs:
+            age = (NOW - j['posted']).total_seconds() / 3600 if j.get('posted') else None
+            w.writerow(dict(site=j['platform'], runs=';'.join(j.get('runs', [])), key='|'.join(norm(j)),
+                            outcome=j.get('outcome', 'not checked'), tier=j.get('tier', ''), fit_score=j.get('fit_score', ''),
+                            age_h='' if age is None else round(age), title=j['title'], company=j['company'],
+                            location=j['location'], url=j['url']))
 if not final:
     sys.exit('No jobs passed the filters. Check the config, or look at the drops above.')
 os.makedirs(os.path.dirname(A.out) or '.', exist_ok=True)
